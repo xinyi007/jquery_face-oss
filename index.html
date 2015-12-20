@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+<meta name="renderer" content="webkit"/>
+<title>头像</title>
+<script src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/cropbox.js"></script>
+<link rel="stylesheet" href="css/style.css" type="text/css"/>
+</head>
+<body>
+
+ 
+<div class="logins">
+<div class="ribox">
+<div class="rtoubox">
+<div class="container">
+  <div class="imageBox">
+    <div class="thumbBox"></div>
+    <div class="spinner" style="display: none">图片加载中...</div>
+  </div>
+  <div class="action"> 
+    <div class="new-contentarea tc"> <a href="javascript:void(0)" class="upload-img">
+      <label for="upload-file">上传图像</label>
+      </a>
+      <input type="file" class="" name="upload-file" id="upload-file"  style="cursor:pointer;"/>
+    </div>
+    <input type="button" id="btnCrop"  class="Btnsty_peyton" value="预览">
+    <input type="button" id="btnZoomIn" class="Btnsty_peyton" value="+"  >
+    <input type="button" id="btnZoomOut" class="Btnsty_peyton" value="-" >
+  </div>
+  <div class="cropped"><p>头像预览</p><img src="http://image.jinguzhongchou.com/new/images/zanwu.png" align="absmiddle" style="width:180px;margin-top:8px;border-radius:180px;box-shadow:0px 0px 12px #7E7E7E;"></div>
+  
+  <div class="queren"><div class="querentxt"><span id="typers">剪辑头像后点击保存头像即可</span></div><div class="quereninp"><input type="button" id="btnupimg" value="保存头像" style="cursor:pointer;"></div></div>
+</div>
+</div>
+</div>
+</div>
+
+<script type="text/javascript">
+$(window).load(function() {
+	var options =
+	{
+		thumbBox: '.thumbBox',
+		spinner: '.spinner',
+		imgSrc: './default.jpg'
+	}
+	var cropper = $('.imageBox').cropbox(options);
+	$('#upload-file').on('change', function(){
+		var reader = new FileReader();
+		reader.onload = function(e) {
+			options.imgSrc = e.target.result;
+			cropper = $('.imageBox').cropbox(options);
+		}
+		reader.readAsDataURL(this.files[0]);
+		this.files = [];
+	})
+	$('#btnCrop').on('click', function(){
+		var img = cropper.getDataURL();
+		$('.cropped').html('');
+		$('.cropped').append('<p>头像预览</p><img src="'+img+'" align="absmiddle" style="width:180px;margin-top:8px;border-radius:180px;box-shadow:0px 0px 12px #7E7E7E;">');
+	})
+	$('#btnZoomIn').on('click', function(){
+		cropper.zoomIn();
+	})
+	$('#btnZoomOut').on('click', function(){
+		cropper.zoomOut();
+	})
+	$('#btnupimg').on('click', function(){
+		var aaa = cropper.getDataURL();
+		$('.cropped').html('');
+		$("#typers").html("<font color=#999999>正在保存头像，请等待...</font>");
+		$('.cropped').append('<p>头像预览</p><img src="'+aaa+'" align="absmiddle" style="width:180px;margin-top:8px;border-radius:180px;box-shadow:0px 0px 12px #7E7E7E;">');
+	$.ajax({
+		type: "POST", 
+		dataType: "text",
+		url: './upload.php',
+		data: "image=" + aaa,
+		error: function (XMLHttpRequest, textStatus, errorThrown) { },
+		success: function (msg){ 
+if (msg=="0") {
+$("#typers").html("<font color=red>头像保存失败，请重新上传！</font>");
+return false; 
+}
+if (msg=="1") {
+$("#typers").html("<a href=face.php><font color=red>头像保存成功，点击首页刷新查看</font></a>");
+return false; 
+}
+}
+});
+	})
+});
+</script>
+</body>
+</html>
