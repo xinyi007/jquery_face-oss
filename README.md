@@ -4,9 +4,7 @@ PHP jquery基于阿里云OSS头像上传组件
 
 其实原理很简单，利用jquery将图片剪切后保存为base64，
 
-然后在POST将base64存储在本地TMP目录中
-
-接下来就是将文件上传至OSS上去！
+然后再将base64 通过 putobject 上传至OSS上去！
 
 主要修改的upload.php文件：
 

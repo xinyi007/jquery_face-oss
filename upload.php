@@ -17,28 +17,19 @@ if ($type!="png"){
 exit("0");
 }
 }
-$base64_body = substr(strstr($base64_image_content,','),1);
-$data= base64_decode($base64_body);
-//将base64转为图片并保存到临时路劲
 $files = time();
-$new_file = "./tmp/".$files.".png";
-if (!file_put_contents($new_file,$data)){
-exit("0");
-}
-else {
 //传到OSS
+$base64_body = substr(strstr($base64_image_content,','),1);
 $object = "face/".$files.".png";
-$save_path = realpath($new_file);
-$content = $save_path;
+$content = base64_decode($base64_body);
 $ossClient = new OssClient(
 OSS_ACCESS_ID, OSS_ACCESS_KEY, OSS_ENDPOINT, false);
 try {
-$ossClient->uploadFile($bucket, $object, $content);
+$ossClient->putObject($bucket, $object, $content);
 } catch (OssException $e) {
 print $e->getMessage();
 }
 session_start();
 $_SESSION['face'] = $urls."face/".$files.".png";
 echo "1";
-}
 ?>
